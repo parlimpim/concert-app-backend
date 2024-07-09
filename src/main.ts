@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 const API_DEFAULT_PORT = 8080;
@@ -28,6 +28,14 @@ async function bootstrap() {
 
   // enable cors
   app.enableCors({ origin: process.env.ALLOW_DOMAIN, credentials: true });
+
+  // class validator
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
   await app.listen(process.env.API_PORT || API_DEFAULT_PORT);
 }
