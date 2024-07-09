@@ -19,6 +19,7 @@ export class CreateUserDto {
   password: string;
 
   @IsEnum(Role)
-  @ApiProperty({ required: false })
+  @IsNotEmpty()
+  @ApiProperty({ required: true, default: Role.USER })
   role: Role;
 }
