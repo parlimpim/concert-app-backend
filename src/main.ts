@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+import { ResponseInterceptor } from './interceptors/response.interceptor';
 
 const API_DEFAULT_PORT = 8080;
 
@@ -36,6 +38,12 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // bind cookie parser
+  app.use(cookieParser());
+
+  // bind response interceptor
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   await app.listen(process.env.API_PORT || API_DEFAULT_PORT);
 }

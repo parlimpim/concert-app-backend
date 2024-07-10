@@ -41,6 +41,11 @@ export class AuthService {
     return { user: { id, name, email, role }, tokens };
   }
 
+  async logout(userId: string) {
+    // clear refresh token in db
+    await this.refreshTokensService.update(userId, null);
+  }
+
   async generateTokens(
     userId: string,
     email: string,
