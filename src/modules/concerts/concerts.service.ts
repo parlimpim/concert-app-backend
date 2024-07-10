@@ -18,8 +18,8 @@ export class ConcertsService {
       const concert: Concert = new Concert();
       concert.name = createConcertDto.name;
       concert.description = createConcertDto.description;
-      concert.total_seats = createConcertDto.seat;
-      concert.created_by = { id: userId } as User;
+      concert.seat = createConcertDto.seat;
+      concert.createdBy = { id: userId } as User;
       return await this.concertRepository.save(concert);
     } catch (err) {
       throw new BadRequestException(
@@ -42,7 +42,7 @@ export class ConcertsService {
     }
 
     if (seat) {
-      where.total_seats = seat;
+      where.seat = seat;
     }
 
     const [concerts, count] = await this.concertRepository.findAndCount({

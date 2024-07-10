@@ -65,14 +65,9 @@ export class AuthService {
 
     // generate new access token
     const user = refreshToken.user;
-    const accessToken = await this.generateTokens(
-      userId,
-      user.email,
-      user.role,
-    );
+    const tokens = await this.generateTokens(userId, user.email, user.role);
 
     // return access token
-    const tokens = { accessToken };
     return { tokens };
   }
 
