@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, MaxLength, Min } from 'class-validator';
 
 export class CreateConcertDto {
   @IsString()
@@ -12,10 +12,11 @@ export class CreateConcertDto {
   @IsNotEmpty()
   @MaxLength(220)
   @ApiProperty({ default: 'Enjoy Christmas vibe at concert' })
-  desciption: string;
+  description: string;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
+  @Min(1)
   @ApiProperty({ default: 100 })
-  total_seats: number;
+  seat: number;
 }
