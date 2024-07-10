@@ -10,13 +10,14 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
 import { AccessTokenAuthGuard } from './guards/access-token.guard';
 import { ClearTokensInterceptor } from 'src/interceptors/clear-tokens.interceptor';
 import { RefreshTokenAuthGuard } from './guards/refresh-token.guard';
 import { SwitchRoleDto } from './dto/switch-role.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
