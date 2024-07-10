@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RefreshTokensModule } from './modules/refresh-tokens/refresh-tokens.module';
 import { ConcertsModule } from './modules/concerts/concerts.module';
+import { ReservationsModule } from './modules/reservations/reservations.module';
 import typeorm from './config/typeorm';
 
 @Module({
@@ -21,6 +22,7 @@ import typeorm from './config/typeorm';
     AuthModule,
     RefreshTokensModule,
     ConcertsModule,
+    ReservationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
