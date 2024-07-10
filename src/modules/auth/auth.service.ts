@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { User } from '../users/entities/user.entity';
@@ -44,6 +48,64 @@ export class AuthService {
   async logout(userId: string) {
     // clear refresh token in db
     await this.refreshTokensService.update(userId, null);
+  }
+
+  async refresh(userId: string, newRefreshToken: string) {
+    const refreshToken =
+      await this.refreshTokensService.findOneByUserId(userId);
+
+    if (!refreshToken || !refreshToken.token || !refreshToken.user)
+      throw new ForbiddenException('Access Denied');
+
+    const isRefreshTokenMatches = await bcrypt.compare(
+      newRefreshToken,
+      refreshToken.token,
+    );
+    if (!isRefreshTokenMatches) throw new ForbiddenException('Access Denied');
+
+    // generate new access token
+    const user = refreshToken.user;
+    const accessToken = await this.generateTokens(
+      userId,
+      user.email,
+      user.role,
+    );
+
+    // return access token
+    const tokens = { accessToken };
+    return { tokens };
+  }
+
+  async switchRole(userId: string, currentRole: Role, newRole: Role) {
+    const user: User = await this.usersService.findOne({ id: userId });
+
+    if (!user) {
+      throw new ForbiddenException('Access Denied');
+    }
+
+    // role user can't switch role
+    if (user.role === Role.USER) {
+      throw new ForbiddenException('Only admins can switch roles');
+    }
+
+    // case user switch to the same role they currently have
+    if (currentRole === newRole) {
+      throw new BadRequestException('You already have this role');
+    }
+
+    // switch role
+    const { name, email } = user;
+
+    // create new tokens
+    const tokens = await this.generateTokens(userId, email, newRole, true);
+
+    // hash refresh token
+    const tokenHash = await bcrypt.hash(tokens.refreshToken, 10);
+
+    // update refresh tokens
+    await this.refreshTokensService.update(userId, tokenHash);
+
+    return { user: { userId, name, email, role: newRole }, tokens };
   }
 
   async generateTokens(

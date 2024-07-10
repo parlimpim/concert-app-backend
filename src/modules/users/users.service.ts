@@ -20,7 +20,8 @@ export class UsersService {
       user.password = createUserDto.password;
       user.role = createUserDto.role;
 
-      const response = await this.refreshTokensService.create(user);
+      const { user: newUser } = await this.refreshTokensService.create(user);
+      const { password: _, ...response } = newUser;
       return response;
     } catch (error) {
       throw new BadRequestException('Email address already in use');

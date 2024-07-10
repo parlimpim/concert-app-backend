@@ -12,7 +12,6 @@ export class RefreshTokensService {
   ) {}
 
   async create(user: User) {
-    console.log('create refreshToken');
     const refreshToken: RefreshToken = new RefreshToken();
     refreshToken.user = user;
     return await this.refreshTokenRepository.save(refreshToken);
@@ -23,5 +22,12 @@ export class RefreshTokensService {
       { user: { id: userId } },
       { token },
     );
+  }
+
+  async findOneByUserId(userId: string) {
+    return await this.refreshTokenRepository.findOne({
+      where: { user: { id: userId } },
+      relations: { user: true },
+    });
   }
 }
