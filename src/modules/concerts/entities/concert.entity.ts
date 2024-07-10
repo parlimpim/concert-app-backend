@@ -23,6 +23,9 @@ export class Concert {
   @Column({ type: 'int' })
   seat: number;
 
+  @Column({ type: 'int', name: 'available_seats' })
+  availableSeats: number;
+
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'created_by' })
   createdBy: User;

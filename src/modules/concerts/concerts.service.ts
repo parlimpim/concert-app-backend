@@ -16,9 +16,11 @@ export class ConcertsService {
   async create(userId: string, createConcertDto: CreateConcertDto) {
     try {
       const concert: Concert = new Concert();
-      concert.name = createConcertDto.name;
-      concert.description = createConcertDto.description;
-      concert.seat = createConcertDto.seat;
+      const { name, description, seat } = createConcertDto;
+      concert.name = name;
+      concert.description = description;
+      concert.seat = seat;
+      concert.availableSeats = seat;
       concert.createdBy = { id: userId } as User;
       return await this.concertRepository.save(concert);
     } catch (err) {
@@ -38,7 +40,7 @@ export class ConcertsService {
     }
 
     if (description) {
-      where.description = ILike(`%${name}%`);
+      where.description = ILike(`%${description}%`);
     }
 
     if (seat) {
@@ -53,5 +55,9 @@ export class ConcertsService {
 
     const response = toPagination(concerts, count, page, pageSize);
     return response;
+  }
+
+  async remove(id: string) {
+    await this.concertRepository.delete(id);
   }
 }

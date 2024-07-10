@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Query,
   Request,
@@ -36,6 +38,7 @@ export class ConcertsController {
     return { message: 'Create concert successful', concert };
   }
 
+  // TODO: add filter isAvailable
   @Get()
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'pageSize', required: false, type: Number })
@@ -45,5 +48,12 @@ export class ConcertsController {
   @ApiResponse({ status: 201, description: 'List concerts successful' })
   async findAll(@Query() filterConcertDto: FilterConcertDto) {
     return await this.concertsService.findAll(filterConcertDto);
+  }
+
+  @Roles(Role.ADMIN)
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    await this.concertsService.remove(id);
+    return { message: 'Delete concert successful' };
   }
 }
