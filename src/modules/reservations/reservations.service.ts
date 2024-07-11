@@ -5,17 +5,21 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Reservation } from './entities/reservation.entity';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { Concert } from '../concerts/entities/concert.entity';
 import { User } from '../users/entities/user.entity';
 import { ReservationStatus } from 'src/enums/reservation-status.enum';
+import { FilterReservationDto } from './dto/filter-reservation.dto';
+import { toPagination } from 'src/utils/pagination';
+import { Role } from 'src/enums/role.enum';
 
 @Injectable()
 export class ReservationsService {
   constructor(
-    @InjectRepository(Reservation)
     private dataSource: DataSource,
+    @InjectRepository(Reservation)
+    private reservationRepository: Repository<Reservation>,
   ) {}
 
   async create(userId: string, createReservationDto: CreateReservationDto) {
@@ -80,4 +84,71 @@ export class ReservationsService {
       await queryRunner.release();
     }
   }
+
+  async findAll(
+    userId: string,
+    role: Role,
+    filterReservationDto: FilterReservationDto,
+  ) {
+    const { page, pageSize, userEmail, userName, concertName, status } =
+      filterReservationDto;
+
+    const queryBuilder = this.reservationRepository
+      .createQueryBuilder('reservation')
+      .leftJoin('reservation.concert', 'concert')
+      .leftJoin('reservation.user', 'user')
+      .addSelect(['user.name', 'user.email', 'concert.name'])
+      .skip((page - 1) * pageSize)
+      .take(pageSize);
+
+    if (role === Role.USER) {
+      queryBuilder.andWhere('user.id = :userId', { userId });
+    }
+
+    if (userEmail) {
+      queryBuilder.andWhere('user.email like :userEmail', {
+        userEmail: `%${userEmail}%`,
+      });
+    }
+
+    if (userName) {
+      queryBuilder.andWhere('user.name like :userName', {
+        userName: `%${userName}%`,
+      });
+    }
+
+    if (concertName) {
+      queryBuilder.andWhere('concert.name like :concertName', {
+        concertName: `%${concertName}%`,
+      });
+    }
+
+    if (status) {
+      queryBuilder.andWhere('reservation.status = :status', { status });
+    }
+
+    const [reservations, count] = await queryBuilder.getManyAndCount();
+
+    const response = toPagination(reservations, count, page, pageSize);
+    return response;
+  }
+
+  // async findReserved(userId: string, page: number, pageSize: number) {
+  //   const queryBuilder = this.reservationRepository.createQueryBuilder('reservation')
+  //     .leftJoinAndSelect('reservation.concert', 'concert')
+  //     .leftJoinAndSelect('reservation.user', 'user', "user.id = :userId", { userId })
+  //     .addSelect([
+  //       'DISTINCT ON (concert.id) reservation.id'
+  //     ])
+  //     // .addSelect(['concert.id', 'concert.name'])
+  //     .orderBy("concert.id")
+  //     .where('reservation.status = :status', { status: ReservationStatus.RESERVED })
+  //     .skip((page - 1) * pageSize)
+  //     .take(pageSize);
+
+  //   const [reservations, count] = await queryBuilder.getManyAndCount();
+
+  //   const response = toPagination(reservations, count, page, pageSize);
+  //   return response;
+  // }
 }
