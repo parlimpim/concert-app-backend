@@ -29,8 +29,10 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async login(@Request() req) {
-    // TODO: need to provide role to login
-    const response = await this.authService.login(req.user);
+    const response = await this.authService.login(
+      req.user.user,
+      req.user.isAdmin,
+    );
     return { message: 'Login successful', ...response };
   }
 

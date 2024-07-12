@@ -30,11 +30,22 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User) {
+  async login(user: User, isAdmin: boolean) {
     const { id, email, name, role } = user;
 
+    // case user want to login as admin but they don't have permission
+    if (isAdmin && role === Role.USER) {
+      throw new ForbiddenException('Access Denied');
+    }
+
+    let loginRole = role;
+    // case admin user want to login as user role
+    if (role === Role.ADMIN && !isAdmin) {
+      loginRole = Role.USER;
+    }
+
     // generate tokens
-    const tokens = await this.generateTokens(id, email, role, true);
+    const tokens = await this.generateTokens(id, email, loginRole, true);
 
     // hash refresh token
     const tokenHash = await bcrypt.hash(tokens.refreshToken, 10);
@@ -42,7 +53,7 @@ export class AuthService {
     // store refresh token in db
     await this.refreshTokensService.update(id, tokenHash);
 
-    return { user: { id, name, email, role }, tokens };
+    return { user: { id, name, email, role, loginRole }, tokens };
   }
 
   async logout(userId: string) {
