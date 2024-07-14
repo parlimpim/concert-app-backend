@@ -46,8 +46,9 @@ export class ConcertsController {
   @ApiQuery({ name: 'description', required: false, type: String })
   @ApiQuery({ name: 'seat', required: false, type: Number })
   @ApiResponse({ status: 201, description: 'List concerts successful' })
-  async findAll(@Query() filterConcertDto: FilterConcertDto) {
-    return await this.concertsService.findAll(filterConcertDto);
+  async findAll(@Request() req, @Query() filterConcertDto: FilterConcertDto) {
+    const userId = req.user['sub'];
+    return await this.concertsService.findAll(userId, filterConcertDto);
   }
 
   @Roles(Role.ADMIN)

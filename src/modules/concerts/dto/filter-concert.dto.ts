@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { PaginationDto } from 'src/utils/pagination';
 
 export class FilterConcertDto extends PaginationDto {
@@ -13,8 +14,10 @@ export class FilterConcertDto extends PaginationDto {
   @ApiProperty()
   description: string;
 
+  @Transform(({ value }) => value && parseInt(value))
   @IsInt()
   @IsOptional()
   @ApiProperty()
+  @Min(1)
   seat: number;
 }
