@@ -15,11 +15,14 @@ describe('ClearTokensInterceptor', () => {
   });
 
   it('response should not have tokens in cookie', () => {
+    const clearCookie = jest.fn();
+    const response = {
+      clearCookie,
+    } as unknown as Response;
+
     const mockExecutionContext = {
       switchToHttp: jest.fn().mockReturnValue({
-        getResponse: jest.fn().mockReturnValue({
-          cookie: jest.fn(),
-        }),
+        getResponse: jest.fn().mockReturnValue(response),
       }),
     } as unknown as ExecutionContext;
 
@@ -30,16 +33,12 @@ describe('ClearTokensInterceptor', () => {
     interceptor
       .intercept(mockExecutionContext, mockCallHandler)
       .subscribe(() => {
-        const response: Response = mockExecutionContext
-          .switchToHttp()
-          .getResponse();
-
         // should clear tokens in cookie
-        expect(response.clearCookie).toHaveBeenCalledWith(
+        expect(clearCookie).toHaveBeenCalledWith(
           'access_token',
           expect.objectContaining({}),
         );
-        expect(response.clearCookie).toHaveBeenCalledWith(
+        expect(clearCookie).toHaveBeenCalledWith(
           'refresh_token',
           expect.objectContaining({}),
         );
