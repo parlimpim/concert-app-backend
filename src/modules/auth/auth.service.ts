@@ -100,7 +100,7 @@ export class AuthService {
     }
 
     // switch role
-    const { name, email } = user;
+    const { name, email, role } = user;
 
     // create new tokens
     const tokens = await this.generateTokens(userId, email, newRole, true);
@@ -111,7 +111,10 @@ export class AuthService {
     // update refresh tokens
     await this.refreshTokensService.update(userId, tokenHash);
 
-    return { user: { userId, name, email, role: newRole }, tokens };
+    return {
+      user: { id: userId, name, email, role, loginRole: newRole },
+      tokens,
+    };
   }
 
   async generateTokens(
