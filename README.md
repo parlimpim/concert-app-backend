@@ -51,3 +51,18 @@ $ npm run test
 # test coverage
 $ npm run test:cov
 ```
+
+### Future Enhancements
+- User Module
+  - Delete
+  - Update user
+  - List all users
+- Unit tests to cover more use cases
+- Seeding data
+- Exception filter
+
+### Bonus task answer
+For detailed answers to the questions are refer to the following documents:
+
+- [Optimization Strategies](./docs/question1.md)
+- [Handling Concurrent Reservations](./docs/question2.md)
