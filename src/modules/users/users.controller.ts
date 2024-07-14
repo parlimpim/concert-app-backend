@@ -14,4 +14,6 @@ export class UsersController {
   async register(@Body() createUserDto: CreateUserDto) {
     return this.usersService.register(createUserDto);
   }
+
+  // TODO: list users, delete users
 }
