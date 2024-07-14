@@ -12,7 +12,7 @@
 Clone the repository
 
 ```
-git clone https://github.com/parlimpim/concert-app-backend
+git clone https://github.com/parlimpim/concert-app-backend.git
 ```
 
 Install all the dependencies
