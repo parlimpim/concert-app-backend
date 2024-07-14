@@ -98,6 +98,7 @@ export class ReservationsService {
       .leftJoin('reservation.concert', 'concert')
       .leftJoin('reservation.user', 'user')
       .addSelect(['user.name', 'user.email', 'concert.name'])
+      .orderBy('reservation.createdAt', 'DESC')
       .skip((page - 1) * pageSize)
       .take(pageSize);
 
@@ -132,23 +133,4 @@ export class ReservationsService {
     const response = toPagination(reservations, count, page, pageSize);
     return response;
   }
-
-  // async findReserved(userId: string, page: number, pageSize: number) {
-  //   const queryBuilder = this.reservationRepository.createQueryBuilder('reservation')
-  //     .leftJoinAndSelect('reservation.concert', 'concert')
-  //     .leftJoinAndSelect('reservation.user', 'user', "user.id = :userId", { userId })
-  //     .addSelect([
-  //       'DISTINCT ON (concert.id) reservation.id'
-  //     ])
-  //     // .addSelect(['concert.id', 'concert.name'])
-  //     .orderBy("concert.id")
-  //     .where('reservation.status = :status', { status: ReservationStatus.RESERVED })
-  //     .skip((page - 1) * pageSize)
-  //     .take(pageSize);
-
-  //   const [reservations, count] = await queryBuilder.getManyAndCount();
-
-  //   const response = toPagination(reservations, count, page, pageSize);
-  //   return response;
-  // }
 }

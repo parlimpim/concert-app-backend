@@ -17,7 +17,6 @@ import { Role } from 'src/enums/role.enum';
 import { RolesGuard } from 'src/guards/roles.guard';
 import { ReservationStatus } from 'src/enums/reservation-status.enum';
 import { FilterReservationDto } from './dto/filter-reservation.dto';
-import { PaginationDto } from 'src/utils/pagination';
 
 @ApiTags('reservations')
 @UseGuards(AccessTokenAuthGuard, RolesGuard)
@@ -76,12 +75,4 @@ export class ReservationsController {
       filterReservationDto,
     );
   }
-
-  // @Roles(Role.USER)
-  // @Get('reserved')
-  // async findReserved(@Request() req, @Query() paginationDto: PaginationDto) {
-  //   const userId = req.user["sub"];
-  //   return await this.reservationsService.findReserved(userId, paginationDto.page, paginationDto.pageSize);
-  //   // have 1 query: isReserved, get only reserved concert
-  // }
 }
